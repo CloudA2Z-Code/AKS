@@ -5,7 +5,7 @@ metadata:
   namespace: endure-namespace
 subjects:
 - kind: User
-  name: Pranitha.Jupalli@uniper.energy
+  name: user1@xyz.com
   apiGroup: rbac.authorization.k8s.io
 roleRef:
   kind: Role
