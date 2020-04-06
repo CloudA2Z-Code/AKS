@@ -15,6 +15,6 @@ roleRef:
 #assign users with emailid which are case senstive or add AAD groups with ObjectID
 subjects:
   - kind: User
-    name: C12623@uniper.energy
+    name: email id #its case senitive
   - kind: Group
-    name: 633e1a1c-c2ba-4fd8-b58a-b03fd6b96c9f
+    name: *****-*****-*****-fd6b96c9f #GUID of your AAD Group
