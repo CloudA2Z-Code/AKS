@@ -15,4 +15,4 @@ roleRef:
 #assign users with emailid which are case senstive or add AAD groups with ObjectID
 subjects:
   - kind: Group
-    name: 633e1a1c-c2ba-4fd8-b58a-b03fd6b96c9f
+    name: 6**********************c9f #AAD Group Object ID
