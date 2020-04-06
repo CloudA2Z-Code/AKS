@@ -1,0 +1,149 @@
+---
+#cmc-namespace-admin-master.yaml
+#This master file creates clusterole assigns kube system namespace based dashboard reader role to user existing in AAD
+#Used for 'kubernetes-dashboard' access
+---
+---
+#Namespace
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ns1
+---
+#cmc-namespace-admin.yaml
+---
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  # "namespace" omitted since ClusterRoles are not namespaced
+  name: cmc-namespace-admin-cr
+rules:
+  # "roles" rules
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["roles"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+  # "clusterroles" rules
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "list", "view", "create", "update", "delete"]
+  # "Pods" rules
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+  # "Nodes" rules - Node rules are effective only on cluster-role-binding
+- apiGroups: [""]
+  resources: ["nodes"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+  # "Secrets" rules
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "watch", "create","update", "delete"]
+  # "TLS Secrets" rules
+  # Need to add TLS sepration in future
+  # "deployments" rules
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+  # "services" rules
+  # "configmaps" rules
+- apiGroups: [""]
+  resources: ["configmaps"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]  
+  # "Extensions" rules
+- apiGroups: ["batch", "extensions"]
+  resources: ["jobs"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  # "cronejobs" rules
+- apiGroups: [""]
+  resources: ["cronjobs"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+  # "daemonsets" rules
+- apiGroups: ["apps"]
+  resources: ["daemonsets"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+  # "ingresses" rules
+- apiGroups: ["extensions"]
+  resources: ["ingresses"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+  # "replicasets" rules
+- apiGroups: ["apps"]
+  resources: ["replicasets"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+    #StatefulSet
+- apiGroups: ["apps"]
+  resources: ["StatefulSet"]
+  verbs: ["get", "list", "watch"]
+  #replicationcontrollers
+- apiGroups: [""]
+  resources: ["replicationcontrollers"]
+  verbs: ["get", "list", "watch"]
+  #events
+- apiGroups: [""]
+  resources: ["events"]
+  verbs: ["get", "list", "watch"]
+  #persistentvolumeclaims
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["persistentvolumeclaims"]
+  verbs: ["get", "list", "watch"]
+  #storageclasses
+- apiGroups: ["storage.k8s.io"]
+  resources: ["storageclasses"]
+  verbs: ["get", "list", "watch"]
+  #non resource urls
+#- nonResourceURLs: ["/healthz", "/healthz/*"]
+#  verbs: ["get", "post"]
+---
+#Role-binding.yaml to cluster role
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: cmc-namespace-admin-rbg
+  namespace: ns1
+subjects:
+  - kind: Group
+    name: 633e1a1c-c2ba-4fd8-b58a-b03fd6b96c9f
+roleRef:
+  kind: Role #this must be Role or ClusterRole
+  name: cmc-namespace-admin-cr # must match the name of the Role
+  apiGroup: rbac.authorization.k8s.io
+---
+#create Deployment
+---
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: webapp-deployment
+  namespace: ns1
+spec:
+  selector:
+    matchLabels:
+      app: webapp
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: webapp
+    spec:
+      containers:
+      - name: webapp
+        image: scottyc/webapp:latest
+        ports:
+        - containerPort: 3000
+          hostPort: 3000
+---
+#create app
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: webapp-service
+  namespace: ns1
+spec:
+  selector:
+    app: webapp
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 9376
