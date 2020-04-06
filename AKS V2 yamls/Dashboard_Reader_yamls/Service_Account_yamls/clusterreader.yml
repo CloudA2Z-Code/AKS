@@ -9,16 +9,24 @@ metadata:
   name: cluster-reader
 rules:
   # namespaces
-- apiGroups: [""]
+- apiGroups: ["rbac.authorization.k8s.io"]
   resources: ["namespaces"]
   verbs: ["get", "list", "watch"]
   # "roles" rules
 - apiGroups: ["rbac.authorization.k8s.io"]
   resources: ["roles"]
   verbs: ["get", "list", "watch"]
+  # "rolebindings" rules
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["rolebindings"]
+  verbs: ["get", "list", "watch"]
   # "clusterroles" rules
 - apiGroups: ["rbac.authorization.k8s.io"]
   resources: ["clusterroles"]
+  verbs: ["get", "list", "watch"]
+  # "clusterrolebindings" rules
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["clusterrolebindings"]
   verbs: ["get", "list", "watch"]
   # "Pods" rules
 - apiGroups: [""]
@@ -35,13 +43,17 @@ rules:
   # "TLS Secrets" rules
   # Need to add TLS sepration in future
   # "deployments" rules
-- apiGroups: ["apps"]
+- apiGroups: ["apps", "batch", "extensions"]
   resources: ["deployments"]
-  verbs: ["get", "list", "watch"]
+  verbs: ["get", "list", "watch"] 
   # "services" rules  
 - apiGroups: [""]
   resources: ["services"]
   verbs: ["get", "list", "watch"]
+  # services endpoints
+- apiGroups: [""]
+  resources: ["endpoints"]
+  verbs: ["get", "list", "watch"]  
   # "configmaps" rules
 - apiGroups: [""]
   resources: ["configmaps"]
@@ -55,7 +67,7 @@ rules:
   resources: ["cronjobs"]
   verbs: ["get", "list", "watch"]
   # "daemonsets" rules
-- apiGroups: ["apps"]
+- apiGroups: ["apps", "extensions"]
   resources: ["daemonsets"]
   verbs: ["get", "list", "watch"]
   # "ingresses" rules
@@ -63,7 +75,7 @@ rules:
   resources: ["ingresses"]
   verbs: ["get", "list", "watch"]
   # "replicasets" rules
-- apiGroups: ["apps"]
+- apiGroups: ["apps", "extensions"]
   resources: ["replicasets"]
   verbs: ["get", "list", "watch"]
   #statefulsets
@@ -79,12 +91,27 @@ rules:
   resources: ["events"]
   verbs: ["get", "list", "watch"]
   #persistentvolumes
+  # "Persistent volumes" rules - are effective only on cluster-role-binding
 - apiGroups: [""]
   resources: ["persistentvolumes"]
   verbs: ["get", "list", "watch"]
+  #persistentvolumeclaims
+- apiGroups: [""]
+  resources: ["persistentvolumeclaims"]
+  verbs: ["get", "list", "watch"]
   #storageclasses
+  # "storageclasses" rules - are effective only on cluster-role-binding
 - apiGroups: ["storage.k8s.io"]
   resources: ["storageclasses"]
   verbs: ["get", "list", "watch"]
+  #resourcequotas
+- apiGroups: [""]
+  resources: ["resourcequotas"]
+  verbs: ["get", "list", "watch"]
+  #limitranges
+- apiGroups: [""]
+  resources: ["limitranges"]
+  verbs: ["get", "list", "watch"]  
+  #non resource urls
 - nonResourceURLs: ["/healthz", "/healthz/*"]
   verbs: ["get"]

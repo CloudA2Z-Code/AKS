@@ -18,15 +18,24 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   # "namespace" omitted since ClusterRoles are not namespaced
   name: cmc-namespace-admin-cr
+  namespace: ns1
 rules:
   # "roles" rules
 - apiGroups: ["rbac.authorization.k8s.io"]
   resources: ["roles"]
   verbs: ["get", "list", "watch", "create", "update", "delete"]
-  # "clusterroles" rules
+  # "rolebindings" rules
+- apiGroups: ["rbac.authorization.k8s.io"]
+  resources: ["rolebindings"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]  
+  # Services
 - apiGroups: [""]
   resources: ["services"]
   verbs: ["get", "list", "view", "create", "update", "delete"]
+  # services endpoints
+- apiGroups: [""]
+  resources: ["endpoints"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"] 
   # "Pods" rules
 - apiGroups: [""]
   resources: ["pods"]
@@ -42,7 +51,7 @@ rules:
   # "TLS Secrets" rules
   # Need to add TLS sepration in future
   # "deployments" rules
-- apiGroups: ["apps"]
+- apiGroups: ["apps", "batch", "extensions"]
   resources: ["deployments"]
   verbs: ["get", "list", "watch", "create", "update", "delete"]
   # "services" rules
@@ -54,12 +63,12 @@ rules:
 - apiGroups: ["batch", "extensions"]
   resources: ["jobs"]
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
-  # "cronejobs" rules
-- apiGroups: [""]
+  # "cronjobs" rules
+- apiGroups: ["batch"]
   resources: ["cronjobs"]
   verbs: ["get", "list", "watch", "create", "update", "delete"]
   # "daemonsets" rules
-- apiGroups: ["apps"]
+- apiGroups: ["apps", "extensions"]
   resources: ["daemonsets"]
   verbs: ["get", "list", "watch", "create", "update", "delete"]
   # "ingresses" rules
@@ -67,29 +76,43 @@ rules:
   resources: ["ingresses"]
   verbs: ["get", "list", "watch", "create", "update", "delete"]
   # "replicasets" rules
-- apiGroups: ["apps"]
+- apiGroups: ["apps", "extensions"]
   resources: ["replicasets"]
   verbs: ["get", "list", "watch", "create", "update", "delete"]
-    #StatefulSet
+  #statefulsets
 - apiGroups: ["apps"]
-  resources: ["StatefulSet"]
-  verbs: ["get", "list", "watch"]
+  resources: ["statefulsets"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
   #replicationcontrollers
 - apiGroups: [""]
   resources: ["replicationcontrollers"]
-  verbs: ["get", "list", "watch"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
   #events
 - apiGroups: [""]
   resources: ["events"]
-  verbs: ["get", "list", "watch"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+  #persistentvolumes
+  # "Persistent volumes" rules - are effective only on cluster-role-binding
+- apiGroups: [""]
+  resources: ["persistentvolumes"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
   #persistentvolumeclaims
-- apiGroups: ["rbac.authorization.k8s.io"]
+- apiGroups: [""]
   resources: ["persistentvolumeclaims"]
-  verbs: ["get", "list", "watch"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
   #storageclasses
+  # "storageclasses" rules - are effective only on cluster-role-binding
 - apiGroups: ["storage.k8s.io"]
   resources: ["storageclasses"]
-  verbs: ["get", "list", "watch"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+  #resourcequotas
+- apiGroups: [""]
+  resources: ["resourcequotas"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
+  #limitranges
+- apiGroups: [""]
+  resources: ["limitranges"]
+  verbs: ["get", "list", "watch", "create", "update", "delete"]
   #non resource urls
 #- nonResourceURLs: ["/healthz", "/healthz/*"]
 #  verbs: ["get", "post"]
@@ -103,7 +126,7 @@ metadata:
   namespace: ns1
 subjects:
   - kind: Group
-    name: 6******-*****-*****6c9f
+    name: 633e1a1c-c2ba-4fd8-b58a-b03fd6b96c9f
 roleRef:
   kind: Role #this must be Role or ClusterRole
   name: cmc-namespace-admin-cr # must match the name of the Role
