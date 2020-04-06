@@ -1,7 +1,7 @@
 ---
 #cmc-namespace-admin-master.yaml
-#This master file creates clusterole assigns kube system namespace based dashboard reader role to user existing in AAD
-#Used for 'kubernetes-dashboard' access
+#This master file creates Role in a namespace and assigns it to a role binding in the namesapace itself, creates deployment and runs a service
+#Used for 'namespace admin' access
 ---
 ---
 #Namespace
