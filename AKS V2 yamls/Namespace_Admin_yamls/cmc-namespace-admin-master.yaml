@@ -126,7 +126,7 @@ metadata:
   namespace: ns1
 subjects:
   - kind: Group
-    name: 633e1a1c-c2ba-4fd8-b58a-b03fd6b96c9f
+    name: ****-*****-*****-d6b96c9f #AAD Group Object ID
 roleRef:
   kind: Role #this must be Role or ClusterRole
   name: cmc-namespace-admin-cr # must match the name of the Role
